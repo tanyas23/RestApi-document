@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.PathParam;
 
@@ -29,7 +31,42 @@ public class BookDao {
 		
 	}
 
-	 public Book getbookDao(int bookid)
+	 public List<Book> getbookDaobookname(String bookname) throws SQLException
+	 {
+		 Book b;
+		 List<Book> list=new ArrayList<Book>();
+		 try {
+	            stmt=con.createStatement();  
+				 String sql = "SELECT * FROM books WHERE bookname='"+bookname+"'";
+				
+				// Where id_asp='"+ id +"'"
+				 System.out.println("getting records from table...");
+				 ResultSet rs = stmt.executeQuery(sql);
+				 System.out.println(rs);
+				 while(rs.next()){
+					 
+					 b = new Book();
+						/*Retrieve one employee details 
+						and store it in employee object*/
+						b.setBookid(rs.getInt("bookid"));
+						b.setBookname(rs.getString("bookname"));
+						b.setAuthor(rs.getString("author"));
+						
+						//add each book to the list
+						list.add(b);
+				 }
+				 
+				
+			} catch (SQLException e) {
+				con.close();
+				 System.out.println("connection closed");
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return list;
+	 }
+	 
+	 public Book getbookDao(int bookid) throws SQLException
 	 {
 		 Book b=new Book();
 		 try {
@@ -53,11 +90,11 @@ public class BookDao {
 				b.setBookid(bookId);
 				b.setBookname(bookname);
 				b.setAuthor(author);
-				 con.close();
-				 System.out.println("connection closed");
+				 
 				
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				con.close();
+				 System.out.println("connection closed");
 				e.printStackTrace();
 			}
 			return b;
@@ -135,7 +172,6 @@ public class BookDao {
 			} catch (SQLException e) {
 				 con.close();
 				 System.out.println("connection closed");
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	 }

@@ -1,10 +1,13 @@
 package org.RestApi.book;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -14,7 +17,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 
 @Path("myresource")
@@ -29,7 +37,28 @@ public class MyResource {
 		
 		BookDao bd=new BookDao();
 		Book bi=new Book();
-		bi=bd.getbookDao(bookid);
+		try {
+			bi=bd.getbookDao(bookid);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return bi;
+	
+    }
+	
+
+    @GET
+    public List<Book> getbookbyname(@QueryParam("bookname") String bookname)  {
+		
+		BookDao bd=new BookDao();
+		List<Book> bi=new ArrayList<Book>();
+		try {
+			bi=bd.getbookDaobookname(bookname);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return bi;
 	
     }
@@ -38,17 +67,18 @@ public class MyResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	public Book addBook(Book book)
+	public Response addBook(Book book, @Context UriInfo uriinfo)
 	{
 		BookDao bd=new BookDao();
 		Book bi=new Book();
 		try {
 			bi=bd.addBookDao(book);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return bi;
+			e.printStackTrace();}
+		
+		return  Response.status(Status.CREATED)
+				   .entity(bi)
+				   .build();
 		
 	}
 	
